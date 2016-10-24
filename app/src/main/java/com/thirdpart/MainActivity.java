@@ -77,7 +77,20 @@ public class MainActivity extends AppCompatActivity {
 
         //生成一个Observable对象
         Observable<EntityBean> observable = service.getTopMovieByAdapter(0,20);
-        observable.subscribeOn(Schedulers.io())
+        observable
+                .compose(new Observable.Transformer<EntityBean, EntityBean>() {
+                    @Override
+                    public Observable<EntityBean> call(Observable<EntityBean> observable) {
+                        return observable
+                                .subscribeOn(Schedulers.io())
+                                .unsubscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread());
+                    }
+                })
+                //equals
+//                .subscribeOn(Schedulers.io())
+//                .unsubscribeOn(Schedulers.io())
+
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<EntityBean>() {
                     @Override
